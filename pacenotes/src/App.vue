@@ -6,17 +6,94 @@
       <img class="map" src="@/assets/map.png" />
     </div>
     <div class="box-inf">
-      <button @click="filteredlaptime()">jsijx</button>
       <div class="dropdown">
         <button class="dropbtn">Dropdown</button>
         <div class="dropdown-content">
-          <a href="#">Link 1</a>
-          <a href="#">Link 2</a>
-          <a href="#">Link 3</a>
+          <a
+            @click="
+              setActiveEndpoint(
+                'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=laptime'
+              )
+            "
+            href="#"
+            >Laptime</a
+          >
+          <a
+            @click="
+              setActiveEndpoint(
+                'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=date'
+              )
+            "
+            href="#"
+            >Date</a
+          >
+          <a
+            @click="
+              setActiveEndpoint(
+                'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=driver_vehicle'
+              )
+            "
+            href="#"
+            >Driver vehicle</a
+          >
+          <a
+            @click="
+              setActiveEndpoint(
+                'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=driver_name'
+              )
+            "
+            href="#"
+            >Driver name</a
+          >
         </div>
       </div>
-      <div v-for="item in data" :key="item.id">
-        {{ item.id }}
+      <div v-for="item in data" :key="item.id"></div>
+
+      <div
+        v-if="
+          activeEndpoint ===
+          'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=laptime'
+        "
+      >
+        <div v-for="item in data2" :key="item.id">
+          Driver name: {{ item.driverName }} Laptime: {{ item.laptime }} Drivers
+          Viacle: {{ item.driverVehicle }} Date: {{ item.date }}
+        </div>
+      </div>
+      <div
+        v-if="
+          activeEndpoint ===
+          'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=date'
+        "
+      >
+        <div v-for="item in data3" :key="item.id">
+          Driver name: {{ item.driverName }} Laptime: {{ item.laptime }} Drivers
+          Viacle: {{ item.driverVehicle }} Date: {{ item.date }}
+        </div>
+      </div>
+
+      <div
+        v-if="
+          activeEndpoint ===
+          'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=driver_vehicle'
+        "
+      >
+        <div v-for="item in data4" :key="item.id">
+          Driver name: {{ item.driverName }} Laptime: {{ item.laptime }} Drivers
+          Viacle: {{ item.driverVehicle }} Date: {{ item.date }}
+        </div>
+      </div>
+
+      <div
+        v-if="
+          activeEndpoint ===
+          'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=driver_name'
+        "
+      >
+        <div v-for="item in data5" :key="item.id">
+          Driver name: {{ item.driverName }} Laptime: {{ item.laptime }} Drivers
+          Viacle: {{ item.driverVehicle }} Date: {{ item.date }}
+        </div>
       </div>
     </div>
   </div>
@@ -28,9 +105,14 @@ export default {
     return {
       data: [],
       data2: [],
+      data3: [],
+      data4: [],
+      data5: [],
+      activeEndpoint:
+        "https://pacenotes.seleven.de/lap-service/rest/lap?limit=20",
     };
   },
-
+  /*
   async created() {
     // GET request using fetch with async/await
     const response = await fetch(
@@ -40,15 +122,74 @@ export default {
     this.data = data;
     console.log(data);
   },
-  computed: {
-    filteredlaptime() {
-      let laptime = this.data;
+*/
+  created() {
+    this.getData();
+    this.getDatadn();
+    this.getDatadt();
+    this.getDatadv();
+    this.getDatalpt();
+  },
+  methods: {
+    getData() {
+      fetch("https://pacenotes.seleven.de/lap-service/rest/lap?limit=20")
+        .then((response) => response.json())
+        .then((data) => {
+          this.data = data;
+          console.log(data);
+        });
+    },
+    getDatalpt() {
+      fetch(
+        "https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=laptime"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          this.data2 = data;
+          console.log(data);
+        });
+    },
 
-      laptime = laptime.filter((item) => {
-        return item.driverVehicle == "E92 M3";
-      });
+    getDatadt() {
+      fetch(
+        "https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=date"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          this.data3 = data;
+          console.log(data);
+        });
+    },
+    getDatadv() {
+      fetch(
+        "https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=driver_vehicle"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          this.data4 = data;
+          console.log(data);
+        });
+    },
+    getDatadn() {
+      fetch(
+        "https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=driver_name"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          this.data5 = data;
+          console.log(data);
+        });
+    },
+    setActiveEndpoint(endpoint) {
+      this.activeEndpoint = endpoint;
     },
   },
+  /*
+  computed: {
+    sortedOptions() {
+      return this.data.sort((a, b) => a.driverName.localeCompare(b.driverName));
+    },
+  },*/
 };
 </script>
 
