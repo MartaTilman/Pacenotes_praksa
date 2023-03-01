@@ -47,6 +47,7 @@
           >
         </div>
       </div>
+
       <div v-for="item in data" :key="item.id"></div>
 
       <div
@@ -55,6 +56,33 @@
           'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=laptime'
         "
       >
+        <form @submit.prevent="showInformationByMonthAndYear">
+          <label for="month">Select a month:</label>
+          <select v-model="selectedMonth" name="month" id="month">
+            <option
+              v-for="(month, index) in months"
+              :key="index"
+              :value="index + 1"
+            >
+              {{ month }}
+            </option>
+          </select>
+          <label for="year">Select a year:</label>
+          <input
+            v-model.number="selectedYear"
+            type="number"
+            name="year"
+            id="year"
+            min="1900"
+            max="2100"
+          />
+          <button type="submit">Show information</button>
+        </form>
+        <div v-if="information.length > 0">
+          <div v-for="(item, index) in information" :key="index">
+            {{ item.driverName }}: {{ item.laptime }}-{{ item.date }}
+          </div>
+        </div>
         <div v-for="item in data2" :key="item.id">
           Driver name: {{ item.driverName }} Laptime: {{ item.laptime }} Drivers
           Viacle: {{ item.driverVehicle }} Date: {{ item.date }}
@@ -100,6 +128,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -108,8 +137,30 @@ export default {
       data3: [],
       data4: [],
       data5: [],
+      information: [],
+      null: [],
       activeEndpoint:
         "https://pacenotes.seleven.de/lap-service/rest/lap?limit=20",
+      pageSize: 10, // number of items per page
+      currentPage: 1, // current page number
+      selectedMonth: new Date().getMonth() + 1,
+      selectedYear: new Date().getFullYear(),
+      months: [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ],
+      endpointUrl:
+        "https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=laptime",
     };
   },
   /*
@@ -131,6 +182,25 @@ export default {
     this.getDatalpt();
   },
   methods: {
+    async showInformationByMonthAndYear() {
+      try {
+        const response = await axios.get(
+          `https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=laptime`
+        );
+
+        const filteredInformation = response.data.filter((item) => {
+          const date = new Date(item.date);
+          const year = date.getFullYear();
+          const month = date.getMonth() + 1;
+          return year === this.selectedYear && month === this.selectedMonth;
+        });
+
+        this.information = filteredInformation;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     getData() {
       fetch("https://pacenotes.seleven.de/lap-service/rest/lap?limit=20")
         .then((response) => response.json())
@@ -184,12 +254,14 @@ export default {
       this.activeEndpoint = endpoint;
     },
   },
-  /*
+
   computed: {
+    /*
     sortedOptions() {
       return this.data.sort((a, b) => a.driverName.localeCompare(b.driverName));
     },
-  },*/
+    */
+  },
 };
 </script>
 
@@ -243,24 +315,26 @@ body {
   width: 500px;
   height: 100%;
 }
-.b_sort {
-  width: $width;
-  height: 55px;
-  float: right;
-  cursor: pointer;
-  margin-right: $margin-sides;
-}
+
 .dropbtn {
-  width: $width;
-  height: 55px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  background-color: blue;
+  color: white;
+  border: none;
+  position: relative;
   float: right;
-  cursor: pointer;
-  margin-right: $margin-sides;
+  margin-top: 10px;
+  margin-right: 10px;
 }
 
 .dropdown {
   position: relative;
-  display: inline-block;
+  float: left;
+
+  margin-right: 10px;
 }
 
 .dropdown-content {
