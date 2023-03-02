@@ -1,13 +1,8 @@
 <template>
   <div>
     <div class="navbar">
-      <img class="meni" src="@/assets/meni.png" />
-      <a><img class="title" src="@/assets/title.png" /></a>
-      <img class="map" src="@/assets/map.png" />
-    </div>
-    <div class="box-inf">
       <div class="dropdown">
-        <button class="dropbtn">Dropdown</button>
+        <img class="meni" src="@/assets/meni.png" />
         <div class="dropdown-content">
           <a
             @click="
@@ -48,14 +43,17 @@
         </div>
       </div>
 
-      <div v-for="item in data" :key="item.id"></div>
-
+      <a><img class="title" src="@/assets/title.png" /></a>
+      <img class="map" src="@/assets/map.png" />
+    </div>
+    <div class="box-inf">
       <div
         v-if="
           activeEndpoint ===
           'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=laptime'
         "
       >
+        <h1>Sort by Laptime</h1>
         <form @submit.prevent="showInformationByMonthAndYear">
           <label for="month">Select a month:</label>
           <select v-model="selectedMonth" name="month" id="month">
@@ -76,16 +74,25 @@
             min="1900"
             max="2100"
           />
-          <button type="submit">Show information</button>
+          <button type="submit" @click="showDiv = !showDiv">
+            Show information
+          </button>
         </form>
+
         <div v-if="information.length > 0">
           <div v-for="(item, index) in information" :key="index">
-            {{ item.driverName }}: {{ item.laptime }}-{{ item.date }}
+            Driver name: {{ item.driverName }} Laptime:
+            {{ item.laptime }} Drivers Viacle: {{ item.driverVehicle }} Date:
+            {{ item.date }}
           </div>
         </div>
-        <div v-for="item in data2" :key="item.id">
-          Driver name: {{ item.driverName }} Laptime: {{ item.laptime }} Drivers
-          Viacle: {{ item.driverVehicle }} Date: {{ item.date }}
+
+        <div v-if="showDiv">
+          <div v-for="item in data2" :key="item.id">
+            Driver name: {{ item.driverName }} Laptime:
+            {{ item.laptime }} Drivers Viacle: {{ item.driverVehicle }} Date:
+            {{ item.date }}
+          </div>
         </div>
       </div>
       <div
@@ -94,6 +101,7 @@
           'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=date'
         "
       >
+        <h1>Sort by Date</h1>
         <div v-for="item in data3" :key="item.id">
           Driver name: {{ item.driverName }} Laptime: {{ item.laptime }} Drivers
           Viacle: {{ item.driverVehicle }} Date: {{ item.date }}
@@ -106,6 +114,7 @@
           'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=driver_vehicle'
         "
       >
+        <h1>Sort by Driver Vehicle</h1>
         <div v-for="item in data4" :key="item.id">
           Driver name: {{ item.driverName }} Laptime: {{ item.laptime }} Drivers
           Viacle: {{ item.driverVehicle }} Date: {{ item.date }}
@@ -118,6 +127,7 @@
           'https://pacenotes.seleven.de/lap-service/rest/lap?limit=100&orderby=driver_name'
         "
       >
+        <h1>Sort by Driver Name</h1>
         <div v-for="item in data5" :key="item.id">
           Driver name: {{ item.driverName }} Laptime: {{ item.laptime }} Drivers
           Viacle: {{ item.driverVehicle }} Date: {{ item.date }}
@@ -138,11 +148,10 @@ export default {
       data4: [],
       data5: [],
       information: [],
-      null: [],
-      activeEndpoint:
-        "https://pacenotes.seleven.de/lap-service/rest/lap?limit=20",
-      pageSize: 10, // number of items per page
-      currentPage: 1, // current page number
+
+      showDiv: true,
+      activeEndpoint: [],
+
       selectedMonth: new Date().getMonth() + 1,
       selectedYear: new Date().getFullYear(),
       months: [
@@ -181,6 +190,7 @@ export default {
     this.getDatadv();
     this.getDatalpt();
   },
+
   methods: {
     async showInformationByMonthAndYear() {
       try {
@@ -261,6 +271,17 @@ export default {
       return this.data.sort((a, b) => a.driverName.localeCompare(b.driverName));
     },
     */
+    // Calculate the items to display on the current page
+    itemsToShow() {
+      const startIndex = (this.currentPage - 1) * this.pageSize;
+      const endIndex = startIndex + this.pageSize;
+      return this.data.slice(startIndex, endIndex);
+    },
+    slicedData() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.data.slice(start, end);
+    },
   },
 };
 </script>
@@ -268,13 +289,15 @@ export default {
 
 
 <style lang="scss">
-$width: 50px;
-$margin-top: 17px;
-$margin-sides: 10 px;
-$color: #373030;
+$width: 150px;
+$margin-top: 10px;
+$margin-sides: 20px;
+$color: #333;
+
 body {
   background-color: #717070;
   margin: 0;
+  font-family: Arial, sans-serif;
 }
 
 .navbar {
@@ -286,31 +309,37 @@ body {
   height: 150px;
   text-align: center;
 }
+
 .meni {
-  width: $width;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   float: left;
   margin-top: $margin-top;
   margin-left: $margin-sides;
   cursor: pointer;
 }
+
 .map {
-  width: $width;
-  height: 55px;
+  width: 60px;
+  height: 60px;
   float: right;
   cursor: pointer;
   margin-top: $margin-top;
   margin-right: $margin-sides;
 }
+
 .box-inf {
-  width: auto;
+  width: 850px;
   height: auto;
   background-color: $color;
-  margin-top: 60spx;
-  border-radius: 15px;
   margin: auto;
+  margin-top: 60px;
+  border-radius: 15px;
   text-align: center;
+  line-height: 50px;
+  color: #f1f1f1;
 }
+
 .title {
   width: 500px;
   height: 100%;
@@ -333,7 +362,6 @@ body {
 .dropdown {
   position: relative;
   float: left;
-
   margin-right: 10px;
 }
 
