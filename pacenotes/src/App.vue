@@ -54,9 +54,15 @@
         "
       >
         <h1>Sort by Laptime</h1>
-        <form @submit.prevent="showInformationByMonthAndYear">
-          <label for="month">Select a month:</label>
-          <select v-model="selectedMonth" name="month" id="month">
+        <h3>Best laptimes by month and year:</h3>
+        <form class="form" @submit.prevent="showInformationByMonthAndYear">
+          <label for="month" class="label">Select a month:</label>
+          <select
+            v-model="selectedMonth"
+            name="month"
+            id="month"
+            class="select"
+          >
             <option
               v-for="(month, index) in months"
               :key="index"
@@ -65,7 +71,7 @@
               {{ month }}
             </option>
           </select>
-          <label for="year">Select a year:</label>
+          <label for="year" class="label">Select a year:</label>
           <input
             v-model.number="selectedYear"
             type="number"
@@ -73,8 +79,9 @@
             id="year"
             min="1900"
             max="2100"
+            class="input"
           />
-          <button type="submit" @click="showDiv = !showDiv">
+          <button type="submit" @click="showDiv = !showDiv" class="button">
             Show information
           </button>
         </form>
@@ -389,7 +396,44 @@ body {
   display: block;
 }
 
-.dropdown:hover .dropbtn {
-  background-color: #3e8e41;
+.form {
+  align-items: center;
+  margin: 2rem 0;
+
+  .label {
+    margin: 0 0 0.5rem;
+  }
+
+  .select,
+  .input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    width: auto;
+
+    &:focus {
+      outline: none;
+      border-color: #0077cc;
+      box-shadow: 0 0 0 2px #0077cc33;
+    }
+  }
+
+  .button {
+    background-color: #3edcd2;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover,
+    &:focus {
+      background-color: #005ea3;
+    }
+  }
 }
 </style>
